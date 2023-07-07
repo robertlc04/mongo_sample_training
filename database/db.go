@@ -1,21 +1,46 @@
 package database
 
 import (
-  "context"
-  "fmt"
+	"context"
+	"fmt"
+	"log"
 
-  "go.mongodb.org/mongo-driver/bson"
-  "go.mongodb.org/mongo-driver/mongo"
-  "go.mongodb.org/mongo-driver/mongo/options"
+	env "github.com/joho/godotenv"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 ) 
 
-func main() {
+func init() {
+	
+	err := env.Load(".env")
+
+	err != nil {
+		log.Fatalf("Something happends %v\n", err)
+	}
+}
+
+
+func NewClient() *mongo.Client, err {
+	
+	// URI
+
+	uri := os.Getenv("MONGO_URI")
+
   // Use the SetServerAPIOptions() method to set the Stable API version to 1
-  serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI("mongodb+srv://dazai:Roberto04@ankidb.wvernzb.mongodb.net/?retryWrites=true&w=majority").SetServerAPIOptions(serverAPI)
+	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
 
   // Create a new client and connect to the server
-  client, err := mongo.Connect(context.TODO(), opts)
+  returb mongo.Connect(context.TODO(), opts)
+}
+
+
+
+func main() {
+    // Create a new client and connect to the server
+  client, err := NewClient()
   if err != nil {
     panic(err)
   }
