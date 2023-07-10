@@ -1,13 +1,13 @@
 package structs
 
 type Zip struct {
-	_id  string `bson:"_id"`
-	city string `bson:"city"`
-	zip  string `bson:"zip"`
-	loc  struct {
-		x float64 `bson:"x"`
-		y float64 `bson:"y"`
-	} `bson:"loc"`
-	pop int `bson:"pop"`
-	state string `bson:"state"`
+	Id   string `bson:"_id" json:"id"`
+	City string `bson:"city" json:"city"`
+	Zip  string `bson:"zip" json:"zip"`
+	Loc  struct {
+		X float64 `bson:"x" json:"x"`
+		Y float64 `bson:"y" json:"y"`
+	} `bson:"loc" json:"loc"`
+	Pop 	int 	 `bson:"pop" json:"pop"`
+	State string `bson:"state" json:"state"`
 }
