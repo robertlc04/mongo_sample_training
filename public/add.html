@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width">
+		<title>API - Add</title>
+	</head>
+	<body>
+		<div id="content"></div>
+		<div class="addform">
+			<input type="text" name="zip" id="zip" value="">
+			<input type="text" name="city" id="city" value="">
+			<input type="text" name="pop" id="pop" value="">
+			<input type="text" name="state" id="state" value="">
+		</div>
+	</body>
+	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+	<script>
+		document.getElementById('content').innerHTML = marked.parse(
+`# Welcome to the API!
+## API:
+			`
+		)
+	</script>
+</html>

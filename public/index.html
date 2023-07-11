@@ -6,12 +6,22 @@
 		<title>API</title>
 	</head>
 	<body>
-		<h1>Hola Mundo</h1>
 		<div id="content"></div>
 	</body>
 	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 	<script>
 	document.getElementById('content').innerHTML =
-      marked.parse('# Marked in the browser\n\nData:\n');
+		marked.parse(
+			`# Welcome to the API! 
+## API:
+Urls:\n
+> - Search: \`/api/input:search\`
+> - GetAll: \`/api/all\` 
+> - Add: \`/api/add\` 
+
+### Example:
+> \`/api/input:search?type=city&value=London\`
+### Notes: 
+	- In the future, we will add more endpoints.`);
 	</script>
 </html>

@@ -3,7 +3,6 @@ package router
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -15,9 +14,12 @@ import (
 	s "github.com/mongo_sample_training/structs"
 )
 
-
 func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	http.ServeFile(w, r, "public/index.html")
+}
+
+func PostPage(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	http.ServeFile(w, r, "public/add.html")
 }
 
 func ApiGetAll(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -37,8 +39,7 @@ func ApiGetAll(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	defer client.Disconnect(context.TODO())
 
-
-	data,err := d.GetAll(client, "zips")
+	data, err := d.GetAll(client, "zips")
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -47,15 +48,12 @@ func ApiGetAll(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	js ,_ := json.Marshal(data)
-
-	fmt.Fprint(w, string(js))
+	json.NewEncoder(w).Encode(data)
 }
 
 func ApiGet(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -66,6 +64,7 @@ func ApiGet(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		return
 	}
 
+	// Empty query error
 	if q.RawQuery == "" {
 		http.Error(w, "No query string", http.StatusBadRequest)
 		return
@@ -73,6 +72,7 @@ func ApiGet(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 
 	query := q.Query()
 
+	// Errors Control
 	if _, err := query["type"]; !err {
 		http.Error(w, "Please Specify the type\n Example: /api/search?type=city&value=Rome", http.StatusInternalServerError)
 		return
@@ -82,18 +82,19 @@ func ApiGet(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		http.Error(w, "Please Specify one type\n Example: /api/search?type=city&value=Rome", http.StatusInternalServerError)
 		return
 	}
-	
+
 	if _, err := query["value"]; !err {
 		http.Error(w, "Please Specify the value to the query\n Example: /api/search?type=city&value=Rome", http.StatusInternalServerError)
 		return
-	} 
+	}
 
 	if len(strings.Join(query["value"], " ")) < 1 {
 		http.Error(w, "Please Specify the value to the query\n Example: /api/search?type=city&value=Rome", http.StatusInternalServerError)
 		return
 	}
 
-	client,err := d.NewClient()
+	// Database Connect
+	client, err := d.NewClient()
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -102,11 +103,10 @@ func ApiGet(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 
 	defer client.Disconnect(context.TODO())
 
-
 	ret := []s.Zip{}
 
-	for _,v := range query["value"] {
-		data,err := d.GetObjs(client, "zips", query["type"][0], v )
+	for _, v := range query["value"] {
+		data, err := d.GetObjs(client, "zips", query["type"][0], v)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -114,21 +114,24 @@ func ApiGet(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		ret = append(ret, data...)
 	}
 
-	log.Println(query, len(query["value"]))
-
-
-	data, err := json.Marshal(ret)
-
-	fmt.Fprint(w,string(data))
+	json.NewEncoder(w).Encode(ret)
 }
 
 func ApiPost(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	data, err := r.GetBody()
+	
+	var body map[string]interface{}
 
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	log.Println(data)
+	log.Println(body)
+
+	w.Header().Set("Content-Type", "application/json")
+
+	resp := map[string]string{ "status": "ok"}
+
+	json.NewEncoder(w).Encode(resp)
 
 }
