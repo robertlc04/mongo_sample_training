@@ -14,6 +14,7 @@ func main() {
 
 	// Pages
 	router.GET("/", r.Index)
+  router.GET("/api", r.Index)
 	router.GET("/api/add", r.PostPage)
 	
 	// Json Data

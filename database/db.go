@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"strings"
+  "errors"
 
 	env "github.com/joho/godotenv"
 
@@ -83,4 +84,33 @@ func GetAll(client *mongo.Client, name string) ([]s.Zip, error) {
 	}
 
 	return data, nil
+}
+
+func ExistObj(client *mongo.Client, name string, data s.Zip) bool {
+  cursor := client.Database("sample_training").Collection(name)
+
+  err := cursor.FindOne(context.TODO(), data).Err()
+
+  if err != nil {
+    return false
+  }
+
+  return true
+}
+
+
+func PostObj(client *mongo.Client, name string, data s.Zip) error {
+  cursor := client.Database("sample_training").Collection(name)
+
+  exist := ExistObj(client,name,data)
+  if exist {
+    return errors.New("The object is in the database")
+  }
+
+  _ , err := cursor.InsertOne(context.TODO(), data)
+  if err != nil {
+    return err
+  }
+
+  return nil
 }

@@ -23,13 +23,6 @@ func PostPage(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 }
 
 func ApiGetAll(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	x, err := url.Parse(r.URL.String())
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	log.Println(x.RawQuery)
 
 	client, err := d.NewClient()
 	if err != nil {
@@ -53,6 +46,7 @@ func ApiGetAll(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
+  // Response
 	json.NewEncoder(w).Encode(data)
 }
 
@@ -70,7 +64,7 @@ func ApiGet(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		return
 	}
 
-	query := q.Query()
+	const query := q.Query()
 
 	// Errors Control
 	if _, err := query["type"]; !err {

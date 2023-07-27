@@ -1,25 +1,102 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width">
-		<title>API - Add</title>
-	</head>
-	<body>
-		<div id="content"></div>
-		<div class="addform">
-			<input type="text" name="zip" id="zip" value="">
-			<input type="text" name="city" id="city" value="">
-			<input type="text" name="pop" id="pop" value="">
-			<input type="text" name="state" id="state" value="">
-		</div>
-	</body>
-	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-	<script>
-		document.getElementById('content').innerHTML = marked.parse(
-`# Welcome to the API!
-## API:
-			`
-		)
-	</script>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>API - Add</title>
+  </head>
+  <body>
+    <div id="content"></div>
+    <div class="addform">
+      <input type="text" name="zip" id="zip" value="" placeholder="zip" />
+      <input type="text" name="city" id="city" value="" placeholder="city" />
+      <input type="text" name="pop" id="pop" value="" placeholder="pop" />
+      <input type="text" name="state" id="state" value="" placeholder="state" />
+    </div>
+    <button type="button" onclick="add()">Add</button>
+    <button type="button" onclick="check()">Check</button>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    const content = document.getElementById("content");
+
+    let zip = document.getElementById("zip").value;
+    let city = document.getElementById("city").value;
+    let pop = document.getElementById("pop").value;
+    let state = document.getElementById("state").value;
+
+    const check = () => {
+      update();
+
+      if (
+        zip.length === 0 ||
+        city.length === 0 ||
+        pop.length === 0 ||
+        state.length === 0
+      ) {
+        content.innerHTML = marked.parse(
+          `# Welcome to the API!\n ## API:\n> *Please fill all the inputs*`,
+        );
+        return false;
+      }
+      print(`*Zip: ${zip} City: ${city} Pop: ${pop} State: ${state}*`);
+      return true;
+    }
+
+    const add = () => {
+      if (!check()) {
+        return;
+      }
+
+      fetch("/api/add", {
+        method: "POST",
+        body: JSON.stringify({
+          zip: zip,
+          city: city,
+          pop: pop,
+          state: state,
+        }),
+      })
+        .then((response) => {
+          return response.text();
+        })
+        .then((text) => {
+          content.innerHTML = marked.parse(text);
+        });
+    };
+
+    const update = () => {
+      zip = document.getElementById("zip").value;
+      city = document.getElementById("city").value;
+      pop = document.getElementById("pop").value;
+      state = document.getElementById("state").value;
+    };
+
+    const print = (str) => {
+      content.innerHTML = marked.parse(
+        `# Welcome to the API!
+## API: *${str}*`,
+      );
+    };
+
+    print();
+  </script>
+
+  <style>
+    body {
+      margin: 1em auto;
+      max-width: 40em;
+    }
+    #content,
+    .addform {
+      padding: 0 1em;
+    }
+    .addform {
+      display: flex;
+      flex-direction: column;
+    }
+    .addform input {
+      margin-top: 0.5em;
+    }
+  </style>
 </html>
